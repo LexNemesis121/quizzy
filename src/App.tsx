@@ -1,35 +1,41 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react';
+import { QuizCard } from './components/QuizCard.tsx';
+import { decimalToTime } from './helpers/dateTime.ts';
+import { quizUrlRoot } from './helpers/appUrls.ts';
+import { Quiz } from './interfaces/interfaces.ts';
 
 function App() {
-  const [count, setCount] = useState(0)
+	const [quizes, setQuizes] = useState<Quiz[]>([]);
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+	useEffect(() => {
+		fetch(`${quizUrlRoot}/quiz`).then(res => res.json()).then((data: {data: Quiz[]}) => setQuizes(data.data));
+	}, []);
+
+	return (
+		<>
+			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+				<div className="mx-auto max-w-3xl">
+					<div className="container">
+						<h1 className="text-3xl mb-10 font-bold tracking-tight text-gray-900 sm:text-6xl">Welcome Test Taker</h1>
+						<p className="mb-6 text-lg leading-8 text-gray-600">Please choose from one of the tests below:</p>
+					</div>
+					{quizes.map((quiz) => {
+						return (
+							<QuizCard title={quiz.quiz_name} key={quiz.id} buttonUrl={quiz.id.toString()} buttonLabel={'View Details'}>
+								<>
+									<div className={'text-sm leading-6 text-gray-600'}>Number of questions: <span
+										className={'text-sm font-bold text-gray-900'}>{quiz.questions?.length ?? 0}</span></div>
+									<div className={'text-sm leading-6 text-gray-600'}>Duration of test: <span
+										className={'text-sm font-bold text-gray-900'}>{decimalToTime((quiz.questions?.length ?? 0) * Number(quiz.time_per_question))}</span>
+									</div>
+								</>
+							</QuizCard>
+						);
+					})}
+				</div>
+			</div>
+		</>
+	);
 }
 
-export default App
+export default App;
