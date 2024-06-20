@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head'); %>
+</head>
+<body>
+    <main>
+        <%- include('./partials/navigation'); %>
+
+        <h1>User List</h1>
+        <% if (users && users.length > 0) { %>
+            <span>Count: <%= users.length %></span>
+            <ul>
+                <% users.forEach(user => { %>
+                    <li>
+                        <strong>id:</strong> <%= user.uid %><br>
+                        <strong>name:</strong> <%= user.name %><br>
+                        <strong>email:</strong> <%= user.email %>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p>No users found.</p>
+        <% } %>
+    </main>
+</body>
+</html>

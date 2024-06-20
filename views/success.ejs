@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head'); %>
+</head>
+<body>
+    <main>
+        <%- include('./partials/navigation'); %>
+
+        <h1>Protected route</h1>
+
+        <% if (user) { %>
+        <ul>
+            <li><strong>id:</strong> <%= user.id %></li>
+            <li><strong>name:</strong> <%= user.name %></li>
+            <li><strong>email:</strong> <%= user.email %></li>
+        </ul>
+        <% } %>
+    </main>
+</body>
+</html>

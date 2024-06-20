@@ -1,0 +1,98 @@
+<meta charset="UTF-8">
+<title>Crowd Authentication</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<style>
+    * {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+    html, body {
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        font-family: Helvetica, Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f4f4f4;
+    }
+
+    .logo {
+        width: 100px;
+        margin: 0 auto 20px auto;
+    }
+
+    .logo img {
+        width: 100%;
+    }
+
+    .container {
+        text-align: center;
+    }
+
+    .server-message {
+        font-size: 0.85rem;
+        margin-bottom: 20px;
+        background-color: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    .server-message.error {
+        background-color: #f4cccc; /* Pastel red */
+        color: #990000; /* Dark red font color */
+    }
+
+    /* For success messages */
+    .server-message.success {
+        background-color: #d8ffd8; /* Pastel green */
+        color: #004d00; /* Dark green font color */
+    }
+
+    .server-message.default {
+        background-color: #cce5ff; /* Pastel blue */
+        color: #004080; /* Dark blue font color */
+    }
+
+    form {
+        background-color: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 400px;
+        margin: auto;
+    }
+
+    form label {
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    form input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    form button {
+        width: 100%;
+        padding: 10px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    form button:hover {
+        background-color: #0056b3;
+    }
+
+</style>

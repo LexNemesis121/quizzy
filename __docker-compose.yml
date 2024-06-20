@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  nodejs-crowd-auth-reverse-proxy:
+    image: nodejs-crowd-auth-reverse-proxy:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    volumes:
+      - ./db:/usr/src/app/db
