@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { quizUrlRoot } from '../helpers/appUrls.ts';
 import { Quiz } from '../interfaces/interfaces.ts';
+import Timer from '../components/Timer.tsx';
 
 const getNextPage = (lastPage: number, currentPage: string | undefined) => {
 	const _currentPage = currentPage ? Number(currentPage) : 0;
@@ -38,6 +39,8 @@ export const TestPage = () => {
 		fetch(`${quizUrlRoot}/quiz/${id}`).then(res => res.json()).then((data: { data: Quiz }) => setQuiz(data.data));
 	}, [id]);
 
+
+
 	if (!quiz) return null;
 	return (
 		<>
@@ -47,6 +50,7 @@ export const TestPage = () => {
 						<h1 className="text-xl mb-10 font-bold tracking-tight text-gray-900 sm:text-xl">{quiz.quiz_name}</h1>
 					</div>
 					<div>
+						<Timer quiz={quiz} />
 						<div>Time left:</div>
 						<div>00:12:58</div>
 						<div className="w-full bg-gray-200 rounded-full h-1.5 mb-4 dark:bg-gray-700">
