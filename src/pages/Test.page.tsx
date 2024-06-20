@@ -46,6 +46,14 @@ export const TestPage = () => {
 					<div className="container">
 						<h1 className="text-xl mb-10 font-bold tracking-tight text-gray-900 sm:text-xl">{quiz.quiz_name}</h1>
 					</div>
+					<div>
+						<div>Time left:</div>
+						<div>00:12:58</div>
+						<div className="w-full bg-gray-200 rounded-full h-1.5 mb-4 dark:bg-gray-700">
+							<div className="bg-blue-600 h-1.5 rounded-full dark:bg-blue-500" style={{width: "45%"}}></div>
+						</div>
+					</div>
+
 					<TestCard questionId={Number(qid ?? 1)} questionNumber={Number(qid ?? 0)}
 										questionTotal={quiz.questions?.length ?? 0}/>
 					<div className={'flex flex-row gap-3'}>
