@@ -19,7 +19,7 @@ export const TestCard = ({questionId, questionNumber, questionTotal}: {
 
 	return (
 		<div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow min-w-[600px]">
-			<div className="px-4 py-5 sm:px-6 bg-slate-200">
+			<div className="px-4 py-5 sm:px-6 bg-gray-100">
 				<h4
 					className={'text-sm font-semibold leading-8 text-gray-700'}>Question {questionNumber === 0 ? 1 : questionNumber} of {questionTotal}</h4>
 			</div>
@@ -28,7 +28,7 @@ export const TestCard = ({questionId, questionNumber, questionTotal}: {
 				<div>
 					{question?.code_snippet &&
 					<pre className={'my-5'}>
-						<code className="bg-gray-100 text-black font-mono text-base p-4 overflow-x-auto rounded-lg">{question?.code_snippet}</code>
+						<code className="bg-gray-100 text-black font-mono text-sm p-4 overflow-x-auto rounded-lg">{question?.code_snippet}</code>
 					</pre>
 					}
 				</div>

@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Quiz } from '../interfaces/interfaces.ts';
 import { getStartTime, resetTimer, secondsToTime, setEndTime, setStartTime } from '../helpers/dateTime.ts';
+import timerService from '../services/timer.service.ts';
 
-const Timer = ({ quiz }: { quiz: Quiz }) => {
+const Timer = ({quiz}: { quiz: Quiz }) => {
 	const TOTAL_TEST_TIME = (Number(quiz?.time_per_question ?? 0.5) * (quiz?.questions.length ?? 0)) * 60 * 1000;
 	const [timeLeft, setTimeLeft] = useState<number>(TOTAL_TEST_TIME);
 	const intervalIdRef = useRef<number | null>(null);
@@ -34,6 +35,20 @@ const Timer = ({ quiz }: { quiz: Quiz }) => {
 				}
 			};
 		}
+	}, [TOTAL_TEST_TIME]);
+
+	useEffect(() => {
+		const subscription = timerService.timeState().subscribe(flowing => {
+			if (flowing) {
+				handleStart();
+			} else {
+				handleReset();
+			}
+		});
+
+		return () => {
+			subscription.unsubscribe();
+		};
 	}, [TOTAL_TEST_TIME]);
 
 	const handleStart = () => {
@@ -68,12 +83,25 @@ const Timer = ({ quiz }: { quiz: Quiz }) => {
 		}
 	};
 
+	const calculateProgress = () => {
+		return ((TOTAL_TEST_TIME - timeLeft) / TOTAL_TEST_TIME) * 100;
+	};
+
 	return (
-		<div>
-			<h1>Timer</h1>
-			<p>{secondsToTime(Math.floor(timeLeft / 1000))}</p>
-			<button onClick={handleStart}>Start Test</button>
-			<button onClick={handleReset}>Reset Timer</button>
+		<div className="overflow-hidden p-5 rounded-lg bg-white shadow min-w-[600px] mb-4">
+			<div className={'flex flex-row justify-between w-full'}>
+				<div>Time left:</div>
+				<div>{secondsToTime(Math.floor(timeLeft / 1000))}</div>
+			</div>
+			<div className="w-full bg-slate-200 rounded-full h-1.5 mb-4 mt-2">
+				<div
+					className="bg-indigo-500 h-1.5 rounded-full"
+					style={{width: `${calculateProgress()}%`}}
+				/>
+			</div>
+
+			{/*<button onClick={handleStart}>Start Test</button>*/}
+			{/*<button onClick={handleReset}>Reset Timer</button>*/}
 		</div>
 	);
 };
