@@ -4,10 +4,11 @@ import { Question } from '../interfaces/interfaces.ts';
 
 const indexToLetter = (index: number):string => String.fromCharCode(65 + index);
 
-export const TestCard = ({questionId, questionNumber, questionTotal}: {
+export const TestCard = ({questionId, questionNumber, questionTotal, changeAnswers}: {
 	questionId: number,
 	questionNumber: number,
-	questionTotal: number
+	questionTotal: number,
+	changeAnswers: (answer: {[p: string]: [number]}) => void
 }) => {
 	const [question, setQuestion] = useState<Question | undefined>(undefined);
 
@@ -35,17 +36,20 @@ export const TestCard = ({questionId, questionNumber, questionTotal}: {
 				<div className="space-y-2">
 					{question?.answers.map((answer, i) => {
 						return (
-							<div key={`answer-${i}`} className="relative flex items-start">
+							<div key={`answer-${questionId}-${i}`} className="relative flex items-start">
 								<div className="flex h-6 items-center">
 									<input
-										id={`${answer.answer.length}-${i}`}
+										onChange={() => {
+											changeAnswers({[questionId]: [i]});
+										}}
+										id={`${answer.answer.length}-${questionId}-${i}`}
 										name="plan"
 										type="radio"
 										className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
 									/>
 								</div>
 								<div className="ml-3 text-sm leading-6">
-									<label htmlFor={`${answer.answer.length}-${i}`} className="font-medium text-gray-900">
+									<label htmlFor={`${answer.answer.length}-${questionId}-${i}`} className="font-medium text-gray-900">
 										<span className={'font-bold mr-1'}>{indexToLetter(i)}.</span>{answer.answer}
 									</label>
 								</div>
