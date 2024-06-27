@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  quizzy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - my-network
+
+#  directus:
+#    image: directus/directus:10.10.1
+#    ports:
+#      - 8055:8055
+#    volumes:
+#      - ./db:/directus/database
+#      - ./uploads:/directus/uploads
+#      - ./extensions:/directus/extensions
+#    env_file:
+#      - .env
+#    environment:
+#      - PORT=8055
+#    networks:
+#      - my-network
+
+networks:
+  my-network:
+    driver: bridge
