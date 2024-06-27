@@ -30,10 +30,11 @@ const isFirstPage = (currentPage: string | number | undefined) => {
 };
 
 const buttonClass = 'bg-indigo-600 flex-1 text-white shadow-sm hover:bg-indigo-500 mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600';
+const buttonClassGreen = 'bg-green-600 flex-1 text-white shadow-sm hover:bg-green-500 mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600';
 const disabledButtonClass = 'bg-gray-200 pointer-events-none cursor-not-allowed flex-1 text-white shadow-sm hover:bg-indigo-500 mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600';
 
 function TestNavigation(props: { onClick: () => void, currentPage: number, onClick1: () => void, quiz: Quiz }) {
-	return <div className={'flex flex-row gap-3'}>
+	return <div className={'w-[600px]'}><div className={'flex flex-row gap-3'}>
 		<button
 			onClick={props.onClick}
 			className={`${isFirstPage(props.currentPage) ? disabledButtonClass : buttonClass}`}
@@ -43,10 +44,20 @@ function TestNavigation(props: { onClick: () => void, currentPage: number, onCli
 		</button>
 		<button
 			onClick={props.onClick1}
-			className={buttonClass}
+			className={`${isLastPage(props.quiz.questions.length, props.currentPage) ? disabledButtonClass : buttonClass}`}
 		>
-			{isLastPage(props.quiz.questions.length, props.currentPage) ? 'Finish' : 'Next'}
+			Next
 		</button>
+	</div>
+		<div className='flex'>
+			{isLastPage(props.quiz.questions.length, props.currentPage) && <button
+				onClick={props.onClick1}
+				className={buttonClassGreen}
+			>
+				Finish Test
+			</button>
+			}
+		</div>
 	</div>;
 }
 
@@ -111,13 +122,13 @@ export const TestPage = () => {
 	if (!quiz) return null;
 	return (
 		<>
-			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-				<div className="mx-auto max-w-3xl">
+			<div className="mx-auto w-[600px] px-4 sm:px-6 lg:px-8">
+				<div className="mx-auto">
 					<div className="container">
-						<h1 className="text-xl mb-10 font-bold tracking-tight text-gray-900 sm:text-xl">{quiz.quiz_name}</h1>
+						<h1 className="text-lg mb-5 font-bold tracking-tight text-gray-900 sm:text-lg">{quiz.quiz_name}</h1>
 					</div>
 					{qid === 'finish' ? (
-							<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+							<div>
 								<div className="mx-auto max-w-3xl">
 									<div className="container">
 									</div>

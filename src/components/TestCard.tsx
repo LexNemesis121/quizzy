@@ -19,7 +19,7 @@ export const TestCard = ({questionId, questionNumber, questionTotal, changeAnswe
 	}, [questionId]);
 
 	return (
-		<div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow min-w-[600px]">
+		<div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow w-[600px]">
 			<div className="px-4 py-5 sm:px-6 bg-gray-100">
 				<h4
 					className={'text-sm font-semibold leading-8 text-gray-700'}>Question {questionNumber === 0 ? 1 : questionNumber} of {questionTotal}</h4>

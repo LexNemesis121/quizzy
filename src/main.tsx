@@ -8,7 +8,6 @@ import {
 } from "react-router-dom";
 import { TestInfoPage } from './pages/TestInfo.page.tsx';
 import { TestPage } from './pages/Test.page.tsx';
-import { TestResultsPage } from './pages/TestResults.page.tsx';
 
 const router = createBrowserRouter([
   {
@@ -26,10 +25,6 @@ const router = createBrowserRouter([
   {
     path: "/test/:id/:qid",
     element: <TestPage />
-  },
-  {
-    path: "/test/:id/finish",
-    element: <TestResultsPage />
   }
 ]);
 

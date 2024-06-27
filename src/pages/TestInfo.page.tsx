@@ -16,10 +16,10 @@ export const TestInfoPage = () => {
 	if(!quiz) return null;
 	return (
 		<>
-			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-				<div className="mx-auto max-w-3xl">
+			<div className="mx-auto w-[600px] px-4 sm:px-6 lg:px-8">
+				<div className="mx-auto w-[600px]">
 					<div className="container">
-						<h1 className="text-3xl mb-10 font-bold tracking-tight text-gray-900 sm:text-6xl">{quiz.quiz_name}</h1>
+						<h1 className="text-lg mb-5 font-bold tracking-tight text-gray-900 sm:text-lg">{quiz.quiz_name}</h1>
 					</div>
 					<QuizCard title={'Instructions'} buttonUrl={'/test/1'} buttonLabel={'Take Test'}>
 						<>
