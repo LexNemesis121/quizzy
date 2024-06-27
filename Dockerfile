@@ -12,7 +12,7 @@ RUN npm install -g vite
 RUN npm install && npm cache clean --force
 
 # Expose the port your app will run on
-EXPOSE 5173
+EXPOSE 8080
 
 # Define the command to run your app
 CMD ["npm", "start"]
