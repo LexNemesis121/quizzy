@@ -1,5 +1,5 @@
 import { TestCard } from '../components/TestCard.tsx';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { quizUrlRoot } from '../helpers/appUrls.ts';
 import { Question, Quiz } from '../interfaces/interfaces.ts';
@@ -37,11 +37,11 @@ const isFirstPage = (currentPage: string | number | undefined) => {
 	return _currentPage === 0 || _currentPage === 1;
 };
 
-const buttonClass =
+export const buttonClass =
 	'bg-indigo-600 flex-1 text-white shadow-sm hover:bg-indigo-500 mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600';
-const buttonClassGreen =
+export const buttonClassGreen =
 	'bg-green-600 flex-1 text-white shadow-sm hover:bg-green-500 mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600';
-const disabledButtonClass =
+export const disabledButtonClass =
 	'bg-gray-200 pointer-events-none cursor-not-allowed flex-1 text-white shadow-sm hover:bg-indigo-500 mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600';
 
 function TestNavigation(props: {
@@ -79,6 +79,8 @@ function TestNavigation(props: {
 }
 
 const TestResults = (props: { correctAnswersCount: number; quiz: Quiz }) => {
+	const navigate = useNavigate();
+
 	return (
 		<div>
 			<div className='mx-auto max-w-3xl'>
@@ -133,6 +135,15 @@ const TestResults = (props: { correctAnswersCount: number; quiz: Quiz }) => {
 					</div>
 				</div>
 			</div>
+			<button
+				onClick={() => {
+					navigate('/');
+				}}
+				className={buttonClass}
+				type='button'
+			>
+				Go back to Homepage
+			</button>
 		</div>
 	);
 };

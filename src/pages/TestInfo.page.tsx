@@ -1,19 +1,21 @@
 import { QuizCard } from '../components/QuizCard.tsx';
 import { decimalToTime } from '../helpers/dateTime.ts';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { quizUrlRoot } from '../helpers/appUrls.ts';
 import { Quiz } from '../interfaces/interfaces.ts';
+import { buttonClass } from './Test.page.tsx';
 
 export const TestInfoPage = () => {
 	const { id } = useParams();
 	const [quiz, setQuiz] = useState<Quiz | undefined>(undefined);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		fetch(`${quizUrlRoot}/quiz/${id}`)
 			.then((res) => res.json())
 			.then((data: { data: Quiz }) => setQuiz(data.data));
-	}, []);
+	}, [id]);
 
 	if (!quiz) return null;
 	return (
@@ -69,6 +71,15 @@ export const TestInfoPage = () => {
 						</>
 					</QuizCard>
 				</div>
+				<button
+					onClick={() => {
+						navigate('/');
+					}}
+					className={buttonClass}
+					type='button'
+				>
+					Go back to Homepage
+				</button>
 			</div>
 		</>
 	);
