@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Quiz } from '../interfaces/interfaces.ts';
 import {
 	getStartTime,
@@ -9,7 +9,7 @@ import {
 } from '../helpers/dateTime.ts';
 import timerService from '../services/timer.service.ts';
 
-const Timer = ({ quiz }: { quiz: Quiz }) => {
+const Timer = ({ quiz, endTest }: { quiz: Quiz; endTest: () => void }) => {
 	const TOTAL_TEST_TIME =
 		Number(quiz?.time_per_question ?? 0.5) *
 		(quiz?.questions.length ?? 0) *
@@ -17,6 +17,12 @@ const Timer = ({ quiz }: { quiz: Quiz }) => {
 		1000;
 	const [timeLeft, setTimeLeft] = useState<number>(TOTAL_TEST_TIME);
 	const intervalIdRef = useRef<number | null>(null);
+
+	useEffect(() => {
+		if (timeLeft < 1000) {
+			endTest();
+		}
+	}, [timeLeft]);
 
 	useEffect(() => {
 		const startTime = getStartTime();

@@ -4,7 +4,6 @@ class TimerService {
 	private timeFlowing$$ = new BehaviorSubject<boolean>(false);
 
 	startTimer = () => {
-		console.log('called');
 		this.timeFlowing$$.next(true);
 	};
 

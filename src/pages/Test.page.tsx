@@ -154,10 +154,16 @@ const Test = (props: {
 	changeAnswers: (answer: { [p: string]: [number] }) => void;
 	onClick: () => void;
 	onClick1: () => void;
+	endTest: () => void;
 }) => {
 	return (
 		<>
-			<Timer quiz={props.quiz} />
+			<Timer
+				quiz={props.quiz}
+				endTest={() => {
+					props.endTest();
+				}}
+			/>
 			<TestCard
 				questionId={Number(props.qid === 0 ? 1 : props.qid)}
 				questionNumber={Number(props.qid ?? 1)}
@@ -210,10 +216,6 @@ export const TestPage = () => {
 			});
 	}, []);
 
-	useEffect(() => {
-		console.log(validAnswers);
-	}, [validAnswers]);
-
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const calculateScore = (finalAnswers: { [key: string]: [number] }) => {
 		let correctAnswersCount = 0;
@@ -265,6 +267,9 @@ export const TestPage = () => {
 							}}
 							onClick1={() => {
 								setQid(getNextPage(quiz.questions.length, qid));
+							}}
+							endTest={() => {
+								setQid('finish');
 							}}
 						/>
 					)}
