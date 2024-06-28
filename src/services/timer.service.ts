@@ -6,13 +6,13 @@ class TimerService {
 	startTimer = () => {
 		console.log('called');
 		this.timeFlowing$$.next(true);
-	}
+	};
 
 	resetTimer = () => {
 		this.timeFlowing$$.next(false);
-	}
+	};
 
-	timeState = () => this.timeFlowing$$.asObservable()
+	timeState = () => this.timeFlowing$$.asObservable();
 }
 
 const timerService = new TimerService();
