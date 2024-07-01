@@ -89,6 +89,12 @@ export const TestResults = (props: {
 		}
 	}, [questions, selectedAnswers, validAnswers, props.quiz.id]);
 
+	useEffect(() => {
+		document.addEventListener('contextmenu', (event) => {
+			event.preventDefault();
+		});
+	}, []);
+
 	return (
 		<div className='mx-auto w-[600px]'>
 			<div>

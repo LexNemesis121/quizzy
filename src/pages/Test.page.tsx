@@ -88,6 +88,12 @@ const Test = (props: {
 	onClick1: () => void;
 	endTest: () => void;
 }) => {
+	useEffect(() => {
+		document.addEventListener('contextmenu', (event) => {
+			event.preventDefault();
+		});
+	}, []);
+
 	return (
 		<>
 			<Timer

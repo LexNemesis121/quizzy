@@ -13,6 +13,12 @@ function App() {
 			.then((data: { data: Quiz[] }) => setQuizes(data.data));
 	}, []);
 
+	useEffect(() => {
+		document.addEventListener('contextmenu', (event) => {
+			event.preventDefault();
+		});
+	}, []);
+
 	return (
 		<>
 			<div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
