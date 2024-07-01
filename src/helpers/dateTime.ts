@@ -1,3 +1,14 @@
+export const formatDuration = (milliseconds: number): string => {
+	const totalSeconds = Math.floor(milliseconds / 1000);
+	const hours = Math.floor(totalSeconds / 3600);
+	const minutes = Math.floor((totalSeconds % 3600) / 60);
+	const seconds = totalSeconds % 60;
+
+	const pad = (num: number) => String(num).padStart(2, '0');
+
+	return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+};
+
 export const decimalToTime = (totalMinutes: number): string => {
 	const totalSeconds = totalMinutes * 60;
 	const hours = Math.floor(totalSeconds / 3600);
@@ -26,6 +37,7 @@ export const setStartTime = () => {
 	if (!startTime) {
 		startTime = Date.now().toString();
 		localStorage.setItem('startTime', startTime);
+		localStorage.setItem('time_started', startTime);
 	}
 	return parseInt(startTime, 10);
 };

@@ -178,6 +178,7 @@ export const TestPage = () => {
 		if (qid === 'finish') {
 			setFinalAnswers(answers);
 			answers && calculateScore(answers);
+			localStorage.setItem('time_ended', JSON.stringify(Date.now()));
 			resetTimer();
 		}
 	}, [answers, calculateScore, finalAnswers, qid]);

@@ -1,8 +1,12 @@
 import { Question, Quiz } from '../interfaces/interfaces.ts';
 import { useNavigate } from 'react-router-dom';
-import { decimalToTime } from '../helpers/dateTime.ts';
+import {
+	decimalToTime,
+	formatDuration,
+	resetTimer
+} from '../helpers/dateTime.ts';
 import { buttonClass } from './Test.page.tsx';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { quizUrlRoot } from '../helpers/appUrls.ts';
 import { TestCardPreview } from '../components/TestCardPreview.tsx';
 import { getValidAnswersList } from '../helpers/validAnswers.ts';
@@ -11,6 +15,8 @@ export const TestResults = (props: {
 	correctAnswersCount: number;
 	quiz: Quiz;
 }) => {
+	const alreadySaved = useRef(false);
+
 	const navigate = useNavigate();
 
 	const [validAnswers, setValidAnswers] = useState<{ [key: string]: number[] }>(
@@ -65,27 +71,41 @@ export const TestResults = (props: {
 			const totalScore = result.reduce((acc, item) => acc + item.score, 0);
 
 			const testTaker = localStorage.getItem('test_taker') || 'unknown';
+			const startTime = parseInt(
+				localStorage.getItem('time_started') || '0',
+				10
+			);
+			const endTime = parseInt(localStorage.getItem('time_ended') || '0', 10);
+			const duration = endTime - startTime;
 
 			const resultObject = {
-				testTaker: testTaker,
-				quizId: props.quiz.id,
+				user_name: testTaker,
+				quiz_id: props.quiz.id,
 				questions: result,
-				result:
-					(props.correctAnswersCount / props.quiz.questions.length) * 100 <
-					props.quiz.pass_mark
-						? 'failed'
-						: 'passed',
+				passed:
+					(props.correctAnswersCount / props.quiz.questions.length) * 100 >=
+					props.quiz.pass_mark,
 				percentage:
-					(
-						(props.correctAnswersCount / props.quiz.questions.length) *
-						100
-					).toFixed(2) + ' %',
-				points: `${totalScore} / ${questions.length}`,
-				totalQuestions: questions.length,
+					(props.correctAnswersCount / props.quiz.questions.length) * 100,
+				points: totalScore,
+				total_questions: questions.length,
+				duration: formatDuration(duration),
 				date: new Date().toISOString()
 			};
 
-			localStorage.setItem('testResult', JSON.stringify(resultObject));
+			if (!alreadySaved.current) {
+				fetch('https://cms.gameroom.ro/items/quiz_results', {
+					headers: {
+						Accept: 'application/json',
+						'Content-Type': 'application/json'
+					},
+					method: 'POST',
+					body: JSON.stringify(resultObject)
+				});
+				alreadySaved.current = true;
+			}
+
+			resetTimer();
 		}
 	}, [questions, selectedAnswers, validAnswers, props.quiz.id]);
 
