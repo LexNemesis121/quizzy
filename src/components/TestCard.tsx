@@ -15,16 +15,16 @@ export const TestCard = ({
 	questionId: number;
 	questionNumber: number;
 	questionTotal: number;
-	changeAnswers: (answer: { [p: string]: [number] }) => void;
+	changeAnswers: (answer: { [key: string]: number[] }) => void;
 }) => {
 	const [question, setQuestion] = useState<Question | undefined>(undefined);
-	const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+	const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
 
 	useEffect(() => {
 		const storedAnswers = localStorage.getItem('answers');
 		if (storedAnswers) {
 			const parsedAnswers = JSON.parse(storedAnswers);
-			setSelectedAnswer(parsedAnswers[questionId]?.[0] ?? null);
+			setSelectedAnswers(parsedAnswers[questionId] ?? []);
 		}
 	}, [questionId]);
 
@@ -35,8 +35,16 @@ export const TestCard = ({
 	}, [questionId]);
 
 	const handleChange = (index: number) => {
-		setSelectedAnswer(index);
-		changeAnswers({ [questionId]: [index] });
+		if (question?.multiple_choice) {
+			const updatedAnswers = selectedAnswers.includes(index)
+				? selectedAnswers.filter((i) => i !== index)
+				: [...selectedAnswers, index];
+			setSelectedAnswers(updatedAnswers);
+			changeAnswers({ [questionId]: updatedAnswers });
+		} else {
+			setSelectedAnswers([index]);
+			changeAnswers({ [questionId]: [index] });
+		}
 	};
 
 	return (
@@ -52,11 +60,6 @@ export const TestCard = ({
 				<div>
 					{question?.code_snippet && (
 						<CodeBlock>{question?.code_snippet}</CodeBlock>
-						// <pre className={'my-5'}>
-						// 	<code className='bg-gray-100 text-black font-mono text-sm p-4 overflow-x-auto rounded-lg'>
-						// 		{question?.code_snippet}
-						// 	</code>
-						// </pre>
 					)}
 				</div>
 				<div className='space-y-2'>
@@ -70,10 +73,10 @@ export const TestCard = ({
 									<input
 										onChange={() => handleChange(i)}
 										id={`${answer.answer.length}-${questionId}-${i}`}
-										name='plan'
-										type='radio'
+										name={`question-${questionId}`}
+										type={question?.multiple_choice ? 'checkbox' : 'radio'}
 										className='h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600'
-										checked={selectedAnswer === i}
+										checked={selectedAnswers.includes(i)}
 									/>
 								</div>
 								<div className='ml-3 text-sm leading-6'>

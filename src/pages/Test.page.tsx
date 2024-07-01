@@ -151,7 +151,7 @@ const TestResults = (props: { correctAnswersCount: number; quiz: Quiz }) => {
 const Test = (props: {
 	quiz: Quiz;
 	qid: number;
-	changeAnswers: (answer: { [p: string]: [number] }) => void;
+	changeAnswers: (answer: { [key: string]: number[] }) => void;
 	onClick: () => void;
 	onClick1: () => void;
 	endTest: () => void;
@@ -192,7 +192,7 @@ export const TestPage = () => {
 
 	const [qid, setQid] = useState<number | 'finish'>(0);
 
-	const [answers, setAnswers] = useState<{ [key: string]: [number] }>();
+	const [answers, setAnswers] = useState<{ [key: string]: number[] }>({});
 	useEffect(() => {
 		const storedAnswers = localStorage.getItem('answers');
 		if (storedAnswers) {
@@ -201,9 +201,11 @@ export const TestPage = () => {
 	}, []);
 
 	const [finalAnswers, setFinalAnswers] = useState<{
-		[key: string]: [number];
-	}>();
-	const [validAnswers, setValidAnswers] = useState<{ [key: string]: number }>();
+		[key: string]: number[];
+	}>({});
+	const [validAnswers, setValidAnswers] = useState<{ [key: string]: number[] }>(
+		{}
+	);
 	const [correctAnswersCount, setCorrectAnswersCount] = useState<number>(0);
 
 	useEffect(() => {
@@ -211,10 +213,10 @@ export const TestPage = () => {
 			.then((res) => res.json())
 			.then((data: { data: Question[] }) => {
 				const validAnswers = data.data.reduce(
-					(acc: { [key: string]: number }, question, index) => {
-						acc[(index + 1).toString()] = question.answers.findIndex(
-							(answer) => answer.is_valid
-						);
+					(acc: { [key: string]: number[] }, question, index) => {
+						acc[(index + 1).toString()] = question.answers
+							.map((answer, i) => (answer.is_valid ? i : -1))
+							.filter((index) => index !== -1);
 						return acc;
 					},
 					{}
@@ -223,13 +225,17 @@ export const TestPage = () => {
 			});
 	}, []);
 
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const calculateScore = (finalAnswers: { [key: string]: [number] }) => {
+	const calculateScore = (finalAnswers: { [key: string]: number[] }) => {
 		let correctAnswersCount = 0;
 
 		if (validAnswers) {
 			for (const questionId in finalAnswers) {
-				if (finalAnswers[questionId][0] === validAnswers[questionId]) {
+				const selectedAnswers = finalAnswers[questionId].sort();
+				const correctAnswers = validAnswers[questionId].sort();
+
+				if (
+					JSON.stringify(selectedAnswers) === JSON.stringify(correctAnswers)
+				) {
 					correctAnswersCount++;
 				}
 			}
@@ -247,7 +253,7 @@ export const TestPage = () => {
 		}
 	}, [answers, calculateScore, finalAnswers, qid]);
 
-	const changeAnswers = (answer: { [key: string]: [number] }) => {
+	const changeAnswers = (answer: { [key: string]: number[] }) => {
 		const updatedAnswers = { ...answers, ...answer };
 		setAnswers(updatedAnswers);
 		localStorage.setItem('answers', JSON.stringify(updatedAnswers));
