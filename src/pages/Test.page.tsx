@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { quizUrlRoot } from '../helpers/appUrls.ts';
 import { Question, Quiz } from '../interfaces/interfaces.ts';
 import Timer from '../components/Timer.tsx';
-import { decimalToTime } from '../helpers/dateTime.ts';
+import { decimalToTime, resetTimer } from '../helpers/dateTime.ts';
 
 const getNextPage = (
 	lastPage: number,
@@ -193,6 +193,13 @@ export const TestPage = () => {
 	const [qid, setQid] = useState<number | 'finish'>(0);
 
 	const [answers, setAnswers] = useState<{ [key: string]: [number] }>();
+	useEffect(() => {
+		const storedAnswers = localStorage.getItem('answers');
+		if (storedAnswers) {
+			setAnswers(JSON.parse(storedAnswers));
+		}
+	}, []);
+
 	const [finalAnswers, setFinalAnswers] = useState<{
 		[key: string]: [number];
 	}>();
@@ -235,11 +242,15 @@ export const TestPage = () => {
 		if (qid === 'finish') {
 			setFinalAnswers(answers);
 			answers && calculateScore(answers);
+			resetTimer();
+			localStorage.removeItem('answers');
 		}
 	}, [answers, calculateScore, finalAnswers, qid]);
 
 	const changeAnswers = (answer: { [key: string]: [number] }) => {
-		setAnswers({ ...answers, ...answer });
+		const updatedAnswers = { ...answers, ...answer };
+		setAnswers(updatedAnswers);
+		localStorage.setItem('answers', JSON.stringify(updatedAnswers));
 	};
 
 	if (!quiz) return null;

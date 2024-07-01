@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { quizUrlRoot } from '../helpers/appUrls.ts';
 import { Question } from '../interfaces/interfaces.ts';
+import CodeBlock from './CodeBlock.tsx';
 
 const indexToLetter = (index: number): string =>
 	String.fromCharCode(65 + index);
@@ -17,12 +18,26 @@ export const TestCard = ({
 	changeAnswers: (answer: { [p: string]: [number] }) => void;
 }) => {
 	const [question, setQuestion] = useState<Question | undefined>(undefined);
+	const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+
+	useEffect(() => {
+		const storedAnswers = localStorage.getItem('answers');
+		if (storedAnswers) {
+			const parsedAnswers = JSON.parse(storedAnswers);
+			setSelectedAnswer(parsedAnswers[questionId]?.[0] ?? null);
+		}
+	}, [questionId]);
 
 	useEffect(() => {
 		fetch(`${quizUrlRoot}/quiz_questions/${questionId}`)
 			.then((res) => res.json())
 			.then((data: { data: Question }) => setQuestion(data.data));
 	}, [questionId]);
+
+	const handleChange = (index: number) => {
+		setSelectedAnswer(index);
+		changeAnswers({ [questionId]: [index] });
+	};
 
 	return (
 		<div className='divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow w-[600px]'>
@@ -36,11 +51,12 @@ export const TestCard = ({
 				<div>{question?.question}</div>
 				<div>
 					{question?.code_snippet && (
-						<pre className={'my-5'}>
-							<code className='bg-gray-100 text-black font-mono text-sm p-4 overflow-x-auto rounded-lg'>
-								{question?.code_snippet}
-							</code>
-						</pre>
+						<CodeBlock>{question?.code_snippet}</CodeBlock>
+						// <pre className={'my-5'}>
+						// 	<code className='bg-gray-100 text-black font-mono text-sm p-4 overflow-x-auto rounded-lg'>
+						// 		{question?.code_snippet}
+						// 	</code>
+						// </pre>
 					)}
 				</div>
 				<div className='space-y-2'>
@@ -52,13 +68,12 @@ export const TestCard = ({
 							>
 								<div className='flex h-6 items-center'>
 									<input
-										onChange={() => {
-											changeAnswers({ [questionId]: [i] });
-										}}
+										onChange={() => handleChange(i)}
 										id={`${answer.answer.length}-${questionId}-${i}`}
 										name='plan'
 										type='radio'
 										className='h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600'
+										checked={selectedAnswer === i}
 									/>
 								</div>
 								<div className='ml-3 text-sm leading-6'>
