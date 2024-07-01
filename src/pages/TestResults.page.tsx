@@ -18,6 +18,11 @@ export const TestResults = (props: {
 	);
 
 	const [questions, setQuestions] = useState<Question[]>([]);
+	const [selectedAnswers, setSelectedAnswers] = useState<{
+		[key: string]: number[];
+	}>();
+
+	// Fetch questions and valid answers
 	useEffect(() => {
 		fetch(`${quizUrlRoot}/quiz_questions`)
 			.then((res) => res.json())
@@ -27,19 +32,62 @@ export const TestResults = (props: {
 			});
 	}, []);
 
-	const [selectedAnswers, setSelectedAnswers] = useState<{
-		[key: string]: number[];
-	}>();
-
+	// Fetch selected answers
 	useEffect(() => {
 		const storedAnswers = localStorage.getItem('answers');
 		if (storedAnswers) {
 			const parsedAnswers = JSON.parse(storedAnswers);
 			setSelectedAnswers(parsedAnswers ?? []);
-			console.log(parsedAnswers);
 		}
-		// localStorage.removeItem('answers');
+		localStorage.removeItem('answers');
 	}, []);
+
+	// Create the result object and store it in localStorage
+	useEffect(() => {
+		if (questions.length && selectedAnswers && validAnswers) {
+			const result = questions.map((question) => {
+				const selected = selectedAnswers[question.id] || [];
+				const valid = validAnswers[question.id] || [];
+				const score =
+					selected.every((ans) => valid.includes(ans)) &&
+					selected.length === valid.length
+						? 1
+						: 0;
+				return {
+					question: question.question,
+					answers: question.answers,
+					selectedAnswers: selected,
+					validAnswers: valid,
+					score: score
+				};
+			});
+
+			const totalScore = result.reduce((acc, item) => acc + item.score, 0);
+
+			const testTaker = localStorage.getItem('test_taker') || 'unknown';
+
+			const resultObject = {
+				testTaker: testTaker,
+				quizId: props.quiz.id,
+				questions: result,
+				result:
+					(props.correctAnswersCount / props.quiz.questions.length) * 100 <
+					props.quiz.pass_mark
+						? 'failed'
+						: 'passed',
+				percentage:
+					(
+						(props.correctAnswersCount / props.quiz.questions.length) *
+						100
+					).toFixed(2) + ' %',
+				points: `${totalScore} / ${questions.length}`,
+				totalQuestions: questions.length,
+				date: new Date().toISOString()
+			};
+
+			localStorage.setItem('testResult', JSON.stringify(resultObject));
+		}
+	}, [questions, selectedAnswers, validAnswers, props.quiz.id]);
 
 	return (
 		<div className='mx-auto w-[600px]'>
@@ -78,8 +126,10 @@ export const TestResults = (props: {
 						<div className={'text-sm leading-6 text-gray-600'}>
 							Percentage:{' '}
 							<span className={'text-sm font-bold text-gray-900'}>
-								{(props.correctAnswersCount / props.quiz.questions.length) *
-									100}{' '}
+								{(
+									(props.correctAnswersCount / props.quiz.questions.length) *
+									100
+								).toFixed(2)}{' '}
 								%
 							</span>
 						</div>
@@ -99,6 +149,7 @@ export const TestResults = (props: {
 				{questions.map((question) => {
 					return (
 						<TestCardPreview
+							key={question.id}
 							selectedAnswers={selectedAnswers?.[question.id]}
 							validAnswers={validAnswers?.[question.id]}
 							questionId={question.id}
