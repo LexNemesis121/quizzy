@@ -1,7 +1,8 @@
 import { BehaviorSubject } from 'rxjs';
+import { getStartTime } from '../helpers/dateTime.ts';
 
 class TimerService {
-	private timeFlowing$$ = new BehaviorSubject<boolean>(false);
+	private timeFlowing$$ = new BehaviorSubject<boolean>(!!getStartTime());
 
 	startTimer = () => {
 		this.timeFlowing$$.next(true);

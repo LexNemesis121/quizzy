@@ -15,21 +15,21 @@ const Timer = ({ quiz, endTest }: { quiz: Quiz; endTest: () => void }) => {
 		(quiz?.questions.length ?? 0) *
 		60 *
 		1000;
+
 	const [timeLeft, setTimeLeft] = useState<number>(TOTAL_TEST_TIME);
 	const intervalIdRef = useRef<number | null>(null);
 
 	useEffect(() => {
 		if (timeLeft < 1000) {
 			endTest();
+			handleReset();
 		}
 	}, [timeLeft]);
 
 	useEffect(() => {
 		const startTime = getStartTime();
-
 		if (startTime) {
 			const endTime = startTime + TOTAL_TEST_TIME;
-
 			const updateCountdown = () => {
 				const currentTime = Date.now();
 				const timeRemaining = endTime - currentTime;
@@ -60,6 +60,11 @@ const Timer = ({ quiz, endTest }: { quiz: Quiz; endTest: () => void }) => {
 			} else {
 				handleReset();
 			}
+
+			const startTime = getStartTime();
+			if (startTime) {
+				handleStart();
+			}
 		});
 
 		return () => {
@@ -71,7 +76,7 @@ const Timer = ({ quiz, endTest }: { quiz: Quiz; endTest: () => void }) => {
 		const startTime = setStartTime();
 		const endTime = startTime + TOTAL_TEST_TIME;
 		setEndTime(endTime);
-		setTimeLeft(TOTAL_TEST_TIME);
+		setTimeLeft(endTime - Date.now());
 
 		if (intervalIdRef.current !== null) {
 			clearInterval(intervalIdRef.current);
@@ -115,9 +120,6 @@ const Timer = ({ quiz, endTest }: { quiz: Quiz; endTest: () => void }) => {
 					style={{ width: `${calculateProgress()}%` }}
 				/>
 			</div>
-
-			{/*<button onClick={handleStart}>Start Test</button>*/}
-			{/*<button onClick={handleReset}>Reset Timer</button>*/}
 		</div>
 	);
 };

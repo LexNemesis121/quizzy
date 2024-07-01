@@ -22,9 +22,12 @@ export const secondsToTime = (totalSeconds: number): string => {
 };
 
 export const setStartTime = () => {
-	const startTime = Date.now();
-	localStorage.setItem('startTime', startTime.toString());
-	return startTime;
+	let startTime = localStorage.getItem('startTime');
+	if (!startTime) {
+		startTime = Date.now().toString();
+		localStorage.setItem('startTime', startTime);
+	}
+	return parseInt(startTime, 10);
 };
 
 export const getStartTime = (): number | null => {
