@@ -1,10 +1,12 @@
 import { TestCard } from '../components/TestCard.tsx';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { quizUrlRoot } from '../helpers/appUrls.ts';
 import { Question, Quiz } from '../interfaces/interfaces.ts';
 import Timer from '../components/Timer.tsx';
-import { decimalToTime, resetTimer } from '../helpers/dateTime.ts';
+import { resetTimer } from '../helpers/dateTime.ts';
+import { TestResults } from './TestResults.page.tsx';
+import { getValidAnswersList } from '../helpers/validAnswers.ts';
 
 const getNextPage = (
 	lastPage: number,
@@ -78,76 +80,6 @@ function TestNavigation(props: {
 	);
 }
 
-const TestResults = (props: { correctAnswersCount: number; quiz: Quiz }) => {
-	const navigate = useNavigate();
-
-	return (
-		<div>
-			<div className='mx-auto max-w-3xl'>
-				<div className='container'></div>
-				<div className='divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow'>
-					<div className='px-4 py-5 sm:px-6'>
-						<h3
-							className={
-								'text-sm flex flex-row items-center font-semibold text-gray-700'
-							}
-						>
-							Test Results:{' '}
-							<span className={'pl-2'}>
-								{(props.correctAnswersCount / props.quiz.questions.length) *
-									100 <
-								props.quiz.pass_mark ? (
-									<span className='inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10'>
-										Failed
-									</span>
-								) : (
-									<span className='inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20'>
-										Passed
-									</span>
-								)}
-							</span>
-						</h3>
-					</div>
-					<div className={'p-6'}>
-						<div className={'text-sm leading-6 text-gray-600'}>
-							Points:{' '}
-							<span className={'text-sm font-bold text-gray-900'}>
-								{props.correctAnswersCount} / {props.quiz.questions.length}
-							</span>
-						</div>
-						<div className={'text-sm leading-6 text-gray-600'}>
-							Percentage:{' '}
-							<span className={'text-sm font-bold text-gray-900'}>
-								{(props.correctAnswersCount / props.quiz.questions.length) *
-									100}{' '}
-								%
-							</span>
-						</div>
-						<div className={'text-sm leading-6 text-gray-600'}>
-							Duration of test:{' '}
-							<span className={'text-sm font-bold text-gray-900'}>
-								{decimalToTime(
-									(props.quiz.questions?.length ?? 0) *
-										Number(props.quiz.time_per_question)
-								)}
-							</span>
-						</div>
-					</div>
-				</div>
-			</div>
-			<button
-				onClick={() => {
-					navigate('/');
-				}}
-				className={buttonClass}
-				type='button'
-			>
-				Go back to Homepage
-			</button>
-		</div>
-	);
-};
-
 const Test = (props: {
 	quiz: Quiz;
 	qid: number;
@@ -212,15 +144,7 @@ export const TestPage = () => {
 		fetch(`${quizUrlRoot}/quiz_questions`)
 			.then((res) => res.json())
 			.then((data: { data: Question[] }) => {
-				const validAnswers = data.data.reduce(
-					(acc: { [key: string]: number[] }, question, index) => {
-						acc[(index + 1).toString()] = question.answers
-							.map((answer, i) => (answer.is_valid ? i : -1))
-							.filter((index) => index !== -1);
-						return acc;
-					},
-					{}
-				);
+				const validAnswers = getValidAnswersList(data);
 				setValidAnswers(validAnswers);
 			});
 	}, []);
@@ -249,7 +173,6 @@ export const TestPage = () => {
 			setFinalAnswers(answers);
 			answers && calculateScore(answers);
 			resetTimer();
-			localStorage.removeItem('answers');
 		}
 	}, [answers, calculateScore, finalAnswers, qid]);
 

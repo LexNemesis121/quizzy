@@ -1,6 +1,6 @@
 import hljs from 'highlight.js';
 import 'highlight.js/styles/default.css';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const CodeBlock = ({
 	children,
@@ -9,18 +9,23 @@ const CodeBlock = ({
 	children: React.ReactNode;
 	language?: string;
 }) => {
-	const highlightCode = () => {
-		const nodes = document.querySelectorAll('pre code');
-		nodes.forEach((node) => hljs.highlightBlock(node as HTMLElement));
-	};
+	const codeRef = useRef<HTMLElement>(null);
 
 	useEffect(() => {
-		highlightCode();
+		if (codeRef.current) {
+			if (codeRef.current.dataset.highlighted) {
+				codeRef.current.innerHTML = codeRef.current.textContent || '';
+			}
+			hljs.highlightElement(codeRef.current);
+			codeRef.current.dataset.highlighted = 'yes';
+		}
 	}, [children]);
 
 	return (
 		<pre>
-			<code className={`language-${language}`}>{children}</code>
+			<code ref={codeRef} className={`language-${language}`}>
+				{children}
+			</code>
 		</pre>
 	);
 };

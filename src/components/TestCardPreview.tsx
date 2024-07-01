@@ -6,46 +6,26 @@ import CodeBlock from './CodeBlock.tsx';
 export const indexToLetter = (index: number): string =>
 	String.fromCharCode(65 + index);
 
-export const TestCard = ({
+export const TestCardPreview = ({
 	questionId,
 	questionNumber,
 	questionTotal,
-	changeAnswers
+	selectedAnswers,
+	validAnswers
 }: {
 	questionId: number;
 	questionNumber: number;
 	questionTotal: number;
-	changeAnswers: (answer: { [key: string]: number[] }) => void;
+	selectedAnswers?: number[];
+	validAnswers?: number[];
 }) => {
 	const [question, setQuestion] = useState<Question | undefined>(undefined);
-	const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
-
-	useEffect(() => {
-		const storedAnswers = localStorage.getItem('answers');
-		if (storedAnswers) {
-			const parsedAnswers = JSON.parse(storedAnswers);
-			setSelectedAnswers(parsedAnswers[questionId] ?? []);
-		}
-	}, [questionId]);
 
 	useEffect(() => {
 		fetch(`${quizUrlRoot}/quiz_questions/${questionId}`)
 			.then((res) => res.json())
 			.then((data: { data: Question }) => setQuestion(data.data));
 	}, [questionId]);
-
-	const handleChange = (index: number) => {
-		if (question?.multiple_choice) {
-			const updatedAnswers = selectedAnswers.includes(index)
-				? selectedAnswers.filter((i) => i !== index)
-				: [...selectedAnswers, index];
-			setSelectedAnswers(updatedAnswers);
-			changeAnswers({ [questionId]: updatedAnswers });
-		} else {
-			setSelectedAnswers([index]);
-			changeAnswers({ [questionId]: [index] });
-		}
-	};
 
 	return (
 		<div className='divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow w-[600px]'>
@@ -67,27 +47,45 @@ export const TestCard = ({
 						return (
 							<div
 								key={`answer-${questionId}-${i}`}
-								className='relative flex items-start'
+								className={`relative flex items-start py-2 px-2 ${validAnswers?.includes(i) ? 'bg-gray-100' : ''} ${selectedAnswers?.includes(i) ? 'bg-gray-100' : ''}`}
 							>
 								<div className='flex h-6 items-center'>
 									<input
-										onChange={() => handleChange(i)}
+										onChange={() => {}}
 										id={`${answer.answer.length}-${questionId}-${i}`}
 										name={`question-${questionId}`}
 										type={question?.multiple_choice ? 'checkbox' : 'radio'}
 										className='h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600'
-										checked={selectedAnswers.includes(i)}
+										checked={selectedAnswers?.includes(i)}
 									/>
 								</div>
 								<div className='ml-3 text-sm leading-6'>
 									<label
 										htmlFor={`${answer.answer.length}-${questionId}-${i}`}
-										className='font-medium text-gray-900'
+										className={`font-medium text-gray-900`}
 									>
 										<span className={'font-bold mr-1'}>
 											{indexToLetter(i)}.
 										</span>
 										{answer.answer}
+										{selectedAnswers?.includes(i) &&
+											validAnswers?.includes(i) && (
+												<span className={'ml-2 text-green-600 font-bold'}>
+													(correct answer)
+												</span>
+											)}
+										{selectedAnswers?.includes(i) &&
+											!validAnswers?.includes(i) && (
+												<span className={'ml-2 text-red-600 font-bold'}>
+													(your answer)
+												</span>
+											)}
+										{validAnswers?.includes(i) &&
+											!selectedAnswers?.includes(i) && (
+												<span className={'ml-2 text-blue-600 font-bold'}>
+													(correct answer)
+												</span>
+											)}
 									</label>
 								</div>
 							</div>

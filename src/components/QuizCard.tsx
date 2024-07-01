@@ -12,6 +12,10 @@ export const QuizCard = ({
 	buttonLabel: string;
 	children: React.ReactNode;
 }) => {
+	const startTest = () => {
+		timerService.startTimer();
+	};
+
 	return (
 		<div className='divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow'>
 			<div className='px-4 py-5 sm:px-6'>
@@ -23,7 +27,7 @@ export const QuizCard = ({
 				{children}
 				<NavLink
 					to={buttonUrl}
-					onClick={() => timerService.startTimer()}
+					onClick={startTest}
 					className={
 						'bg-indigo-600 text-white shadow-sm hover:bg-indigo-500 mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
 					}
