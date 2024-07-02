@@ -50,9 +50,9 @@ export const TestResults = (props: {
 
 	// Create the result object and store it in localStorage
 	useEffect(() => {
-		if (questions.length && selectedAnswers && validAnswers) {
+		if (questions.length && validAnswers) {
 			const result = questions.map((question) => {
-				const selected = selectedAnswers[question.id] || [];
+				const selected = selectedAnswers?.[question.id] || [];
 				const valid = validAnswers[question.id] || [];
 				const score =
 					selected.every((ans) => valid.includes(ans)) &&
