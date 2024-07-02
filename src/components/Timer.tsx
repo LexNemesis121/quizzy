@@ -19,12 +19,12 @@ const Timer = ({ quiz, endTest }: { quiz: Quiz; endTest: () => void }) => {
 	const [timeLeft, setTimeLeft] = useState<number>(TOTAL_TEST_TIME);
 	const intervalIdRef = useRef<number | null>(null);
 
-	useEffect(() => {
-		if (timeLeft < 1000) {
-			// endTest();
-			handleReset();
-		}
-	}, [timeLeft]);
+	// useEffect(() => {
+	// 	if (timeLeft < 1000) {
+	// 		// endTest();
+	// 		handleReset();
+	// 	}
+	// }, [timeLeft]);
 
 	useEffect(() => {
 		const startTime = getStartTime();
