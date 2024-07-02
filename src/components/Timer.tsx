@@ -21,7 +21,7 @@ const Timer = ({ quiz, endTest }: { quiz: Quiz; endTest: () => void }) => {
 
 	useEffect(() => {
 		if (timeLeft < 1000) {
-			endTest();
+			// endTest();
 			handleReset();
 		}
 	}, [timeLeft]);
