@@ -26,7 +26,8 @@ export const QuizCard = ({
 		haXjoRCOGe: 'Sonia Banea',
 		MzuxtaPAAO: 'Mihai Balan',
 		mvFysANAos: 'Alexandru Crihan',
-		RlxWCZvaxD: 'Alexandru Verdes'
+		RlxWCZvaxD: 'Alexandru Verdes',
+		cTstPsbAnD: 'Demo/Test Account'
 	};
 
 	useEffect(() => {
