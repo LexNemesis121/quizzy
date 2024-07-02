@@ -1,5 +1,5 @@
 import { QuizCard } from '../components/QuizCard.tsx';
-import { decimalToTime } from '../helpers/dateTime.ts';
+import { checkAndResetTimer, decimalToTime } from '../helpers/dateTime.ts';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { quizUrlRoot } from '../helpers/appUrls.ts';
@@ -16,6 +16,10 @@ export const TestInfoPage = () => {
 			.then((res) => res.json())
 			.then((data: { data: Quiz }) => setQuiz(data.data));
 	}, [id]);
+
+	useEffect(() => {
+		checkAndResetTimer();
+	}, []);
 
 	if (!quiz) return null;
 	return (

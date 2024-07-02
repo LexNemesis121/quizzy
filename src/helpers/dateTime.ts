@@ -60,3 +60,10 @@ export const resetTimer = () => {
 	localStorage.removeItem('startTime');
 	localStorage.removeItem('endTime');
 };
+
+export const checkAndResetTimer = () => {
+	const endTime = getEndTime();
+	if (endTime !== null && Date.now() > endTime) {
+		resetTimer();
+	}
+};

@@ -50,7 +50,7 @@ export const TestResults = (props: {
 
 	// Create the result object and store it in localStorage
 	useEffect(() => {
-		if (questions.length && validAnswers) {
+		if (questions.length && validAnswers && selectedAnswers) {
 			const result = questions.map((question) => {
 				const selected = selectedAnswers?.[question.id] || [];
 				const valid = validAnswers[question.id] || [];
@@ -171,20 +171,28 @@ export const TestResults = (props: {
 					</div>
 				</div>
 			</div>
-			<div className={'mt-5 flex flex-col gap-5'}>
-				{questions.map((question) => {
-					return (
-						<TestCardPreview
-							key={question.id}
-							selectedAnswers={selectedAnswers?.[question.id]}
-							validAnswers={validAnswers?.[question.id]}
-							questionId={question.id}
-							questionNumber={Number(question.id ?? 1)}
-							questionTotal={props.quiz.questions?.length ?? 0}
-						/>
-					);
-				})}
-			</div>
+			{Object.keys(selectedAnswers ?? {}).length > 0 ? (
+				<div className={'mt-5 flex flex-col gap-5'}>
+					{questions.map((question) => {
+						return (
+							<TestCardPreview
+								key={question.id}
+								selectedAnswers={selectedAnswers?.[question.id]}
+								validAnswers={validAnswers?.[question.id]}
+								questionId={question.id}
+								questionNumber={Number(question.id ?? 1)}
+								questionTotal={props.quiz.questions?.length ?? 0}
+							/>
+						);
+					})}
+				</div>
+			) : (
+				<div className='rounded-lg bg-white shadow p-4 mt-5 text-sm'>
+					You have not given any answers. There might be an error with the test.
+					<br />
+					<strong>Please try reloading the page.</strong>
+				</div>
+			)}
 			<button
 				onClick={() => {
 					navigate('/');

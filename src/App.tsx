@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { QuizCard } from './components/QuizCard.tsx';
-import { decimalToTime } from './helpers/dateTime.ts';
+import { checkAndResetTimer, decimalToTime } from './helpers/dateTime.ts';
 import { quizUrlRoot } from './helpers/appUrls.ts';
 import { Quiz } from './interfaces/interfaces.ts';
 
@@ -17,6 +17,7 @@ function App() {
 		document.addEventListener('contextmenu', (event) => {
 			event.preventDefault();
 		});
+		checkAndResetTimer();
 	}, []);
 
 	return (
