@@ -1,20 +1,25 @@
 import timerService from '../services/timer.service.ts';
-import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { getStartTime, setEndTime, setStartTime } from '../helpers/dateTime.ts';
 
 export const QuizCard = ({
 	title,
 	children,
 	buttonUrl,
-	buttonLabel
+	buttonLabel,
+	testTime
 }: {
 	title: string;
 	buttonUrl: string;
 	buttonLabel: string;
 	children: React.ReactNode;
+	testTime: number;
 }) => {
 	const startTest = () => {
 		timerService.startTimer();
+		setStartTime();
+		setEndTime(getStartTime() ?? Date.now() + testTime);
 	};
 
 	const [validCode, setValidCode] = useState<boolean>(false);
@@ -44,6 +49,8 @@ export const QuizCard = ({
 	const isCodeValid = (code: string) => {
 		return Object.keys(users).indexOf(code) !== -1;
 	};
+
+	const navigate = useNavigate();
 
 	return (
 		<div className='divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow'>
@@ -83,11 +90,14 @@ export const QuizCard = ({
 					</div>
 				)}
 				{(validCode || buttonLabel !== 'Take Test') && (
-					<NavLink
-						to={buttonUrl}
+					<button
+						type='button'
 						onClick={() => {
 							if (buttonLabel === 'Take Test') {
 								startTest();
+								setTimeout(() => {
+									navigate(buttonUrl);
+								}, 100);
 							}
 						}}
 						className={
@@ -95,7 +105,7 @@ export const QuizCard = ({
 						}
 					>
 						{buttonLabel}
-					</NavLink>
+					</button>
 				)}
 			</div>
 		</div>

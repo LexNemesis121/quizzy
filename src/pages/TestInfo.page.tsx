@@ -35,6 +35,12 @@ export const TestInfoPage = () => {
 						title={'Instructions'}
 						buttonUrl={'/test/1'}
 						buttonLabel={'Take Test'}
+						testTime={
+							Number(quiz?.time_per_question ?? 0.5) *
+							(quiz?.questions.length ?? 0) *
+							60 *
+							1000
+						}
 					>
 						<>
 							<div className={'text-sm leading-6 text-gray-600'}>

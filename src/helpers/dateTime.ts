@@ -49,6 +49,7 @@ export const getStartTime = (): number | null => {
 
 export const setEndTime = (endTime: number) => {
 	localStorage.setItem('endTime', endTime.toString());
+	localStorage.setItem('time_ended', endTime.toString());
 };
 
 export const getEndTime = (): number | null => {
@@ -61,9 +62,13 @@ export const resetTimer = () => {
 	localStorage.removeItem('endTime');
 };
 
-export const checkAndResetTimer = () => {
+export const checkTimer = () => {
 	const endTime = getEndTime();
-	if (endTime !== null && Date.now() > endTime) {
+	return endTime !== null && Date.now() > endTime;
+};
+
+export const checkAndResetTimer = () => {
+	if (checkTimer()) {
 		resetTimer();
 	}
 };

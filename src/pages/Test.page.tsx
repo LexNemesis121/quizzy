@@ -1,10 +1,10 @@
 import { TestCard } from '../components/TestCard.tsx';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { quizUrlRoot } from '../helpers/appUrls.ts';
 import { Question, Quiz } from '../interfaces/interfaces.ts';
 import Timer from '../components/Timer.tsx';
-import { resetTimer } from '../helpers/dateTime.ts';
+import { checkTimer, getEndTime, resetTimer } from '../helpers/dateTime.ts';
 import { TestResults } from './TestResults.page.tsx';
 import { getValidAnswersList } from '../helpers/validAnswers.ts';
 
@@ -188,6 +188,14 @@ export const TestPage = () => {
 		setAnswers(updatedAnswers);
 		localStorage.setItem('answers', JSON.stringify(updatedAnswers));
 	};
+
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (checkTimer() || getEndTime() === null) {
+			navigate(`/${id}`);
+		}
+	}, [id]);
 
 	if (!quiz) return null;
 	return (
