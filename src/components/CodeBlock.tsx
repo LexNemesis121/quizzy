@@ -1,24 +1,36 @@
-import hljs from 'highlight.js';
-import 'highlight.js/styles/default.css';
-import React, { useEffect } from 'react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { LegacyRef } from 'react';
 
-const CodeBlock = ({
-	children,
-	language = 'typescript'
-}: {
-	children: React.ReactNode;
-	language?: string;
-}) => {
-	useEffect(() => {
-		const nodes = document.querySelectorAll('pre code');
-		nodes.forEach((node) => hljs.highlightBlock(node as HTMLElement));
-	}, []);
+import Markdown from 'react-markdown';
+import { nord } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
+type Props = {
+	content?: string | null;
+};
+export const CodeBlock = ({ content }: Props) => {
 	return (
-		<pre>
-			<code className={`language-${language}`}>{children}</code>
-		</pre>
+		<Markdown
+			children={content}
+			components={{
+				code(props) {
+					const { children, className, ref, ...rest } = props;
+					const match = /language-(\w+)/.exec(className || '');
+					return match ? (
+						<SyntaxHighlighter
+							{...rest}
+							ref={ref as LegacyRef<SyntaxHighlighter>}
+							PreTag='div'
+							children={String(children).replace(/\n$/, '')}
+							language={match[1]}
+							style={nord}
+						/>
+					) : (
+						<code {...rest} className={className}>
+							{children}
+						</code>
+					);
+				}
+			}}
+		/>
 	);
 };
-
-export default CodeBlock;

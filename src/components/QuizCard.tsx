@@ -19,7 +19,9 @@ export const QuizCard = ({
 	const startTest = () => {
 		timerService.startTimer();
 		setStartTime();
-		setEndTime(getStartTime() ?? Date.now() + testTime);
+		setTimeout(() => {
+			setEndTime((getStartTime() ?? Date.now()) + testTime);
+		}, 10);
 	};
 
 	const [validCode, setValidCode] = useState<boolean>(false);
@@ -89,24 +91,24 @@ export const QuizCard = ({
 						</div>
 					</div>
 				)}
-				{(validCode || buttonLabel !== 'Take Test') && (
-					<button
-						type='button'
-						onClick={() => {
-							if (buttonLabel === 'Take Test') {
-								startTest();
-								setTimeout(() => {
-									navigate(buttonUrl);
-								}, 100);
-							}
-						}}
-						className={
-							'bg-indigo-600 text-white shadow-sm hover:bg-indigo-500 mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+				<button
+					type='button'
+					onClick={() => {
+						if (buttonLabel === 'Take Test' && validCode) {
+							startTest();
+							setTimeout(() => {
+								navigate(buttonUrl);
+							}, 100);
+						} else {
+							navigate(buttonUrl);
 						}
-					>
-						{buttonLabel}
-					</button>
-				)}
+					}}
+					className={
+						'bg-indigo-600 text-white shadow-sm hover:bg-indigo-500 mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+					}
+				>
+					{buttonLabel}
+				</button>
 			</div>
 		</div>
 	);

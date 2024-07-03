@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { quizUrlRoot } from '../helpers/appUrls.ts';
 import { Question } from '../interfaces/interfaces.ts';
-import CodeBlock from './CodeBlock.tsx';
+import { CodeBlock } from './CodeBlock.tsx';
 
 export const indexToLetter = (index: number): string =>
 	String.fromCharCode(65 + index);
@@ -39,7 +39,7 @@ export const TestCardPreview = ({
 				<div>{question?.question}</div>
 				<div>
 					{question?.code_snippet && (
-						<CodeBlock>{question?.code_snippet}</CodeBlock>
+						<CodeBlock content={question?.code_snippet} />
 					)}
 				</div>
 				<div className='space-y-2'>
@@ -82,7 +82,7 @@ export const TestCardPreview = ({
 											)}
 										{validAnswers?.includes(i) &&
 											!selectedAnswers?.includes(i) && (
-												<span className={'ml-2 text-blue-600 font-bold'}>
+												<span className={'ml-2 text-indigo-600 font-bold'}>
 													(correct answer)
 												</span>
 											)}

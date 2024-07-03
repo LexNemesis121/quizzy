@@ -7,6 +7,8 @@ import Timer from '../components/Timer.tsx';
 import { checkTimer, getEndTime, resetTimer } from '../helpers/dateTime.ts';
 import { TestResults } from './TestResults.page.tsx';
 import { getValidAnswersList } from '../helpers/validAnswers.ts';
+import { userImg } from '../helpers/userImg.ts';
+import { questionListImg } from '../helpers/questionListImg.ts';
 
 const getNextPage = (
 	lastPage: number,
@@ -206,6 +208,16 @@ export const TestPage = () => {
 						<h1 className='text-lg mb-5 font-bold tracking-tight text-gray-900 sm:text-lg'>
 							{quiz.quiz_name}
 						</h1>
+						<div className='flex flex-row gap-5 divide-x divide-gray-400 mb-5'>
+							<div className={'flex flex-row items-center gap-2'}>
+								<img className={'w-5 h-5'} src={questionListImg} />
+								<span>Question List</span>
+							</div>
+							<div className={'flex flex-row items-center pl-5 gap-2'}>
+								<img className={'w-5 h-5'} src={userImg} />
+								<span>{localStorage.getItem('test_taker')}</span>
+							</div>
+						</div>
 					</div>
 					{qid === 'finish' ? (
 						<TestResults

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { quizUrlRoot } from '../helpers/appUrls.ts';
 import { Question } from '../interfaces/interfaces.ts';
-import CodeBlock from './CodeBlock.tsx';
+import { CodeBlock } from './CodeBlock.tsx';
 
 export const indexToLetter = (index: number): string =>
 	String.fromCharCode(65 + index);
@@ -59,7 +59,7 @@ export const TestCard = ({
 				<div>{question?.question}</div>
 				<div>
 					{question?.code_snippet && (
-						<CodeBlock>{question?.code_snippet}</CodeBlock>
+						<CodeBlock content={question?.code_snippet} />
 					)}
 				</div>
 				<div className='space-y-2'>
