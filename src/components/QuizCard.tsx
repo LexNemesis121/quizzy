@@ -18,6 +18,10 @@ export const QuizCard = ({
 }) => {
 	const startTest = () => {
 		localStorage.removeItem('questions');
+		localStorage.removeItem('startTime');
+		localStorage.removeItem('endTime');
+		localStorage.removeItem('time_started');
+		localStorage.removeItem('time_ended');
 		timerService.startTimer();
 		setStartTime();
 		setTimeout(() => {

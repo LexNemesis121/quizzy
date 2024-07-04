@@ -81,7 +81,7 @@ export const TestPage = () => {
 			});
 	}, [id]);
 
-	const [qid, setQid] = useState<number | 'finish'>(0);
+	const [qid, setQid] = useState<number | 'finish'>(1);
 
 	const [answers, setAnswers] = useState<{ [key: string]: number[] }>({});
 	useEffect(() => {
