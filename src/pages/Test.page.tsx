@@ -9,78 +9,12 @@ import { TestResults } from './TestResults.page.tsx';
 import { getValidAnswersList } from '../helpers/validAnswers.ts';
 import { userImg } from '../helpers/userImg.ts';
 import { questionListImg } from '../helpers/questionListImg.ts';
-
-const getNextPage = (
-	lastPage: number,
-	currentPage: string | number | undefined
-) => {
-	const _currentPage = currentPage ? Number(currentPage) : 0;
-	if (_currentPage + 1 > lastPage) {
-		return 'finish';
-	}
-	return _currentPage + 1 === lastPage
-		? lastPage
-		: (_currentPage === 0 ? 1 : _currentPage) + 1;
-};
-
-const getPreviousPage = (currentPage: string | number | undefined) => {
-	const _currentPage = currentPage ? Number(currentPage) : 0;
-	return _currentPage - 1 <= 0 ? 1 : _currentPage - 1;
-};
-
-const isLastPage = (
-	lastPage: number,
-	currentPage: string | number | undefined
-) => {
-	const _currentPage = currentPage ? Number(currentPage) : 0;
-	return _currentPage + 1 > lastPage;
-};
-
-const isFirstPage = (currentPage: string | number | undefined) => {
-	const _currentPage = currentPage ? Number(currentPage) : 0;
-	return _currentPage === 0 || _currentPage === 1;
-};
-
-export const buttonClass =
-	'bg-indigo-600 flex-1 text-white shadow-sm hover:bg-indigo-500 mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600';
-export const buttonClassGreen =
-	'bg-green-600 flex-1 text-white shadow-sm hover:bg-green-500 mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600';
-export const disabledButtonClass =
-	'bg-gray-200 pointer-events-none cursor-not-allowed flex-1 text-white shadow-sm hover:bg-indigo-500 mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600';
-
-function TestNavigation(props: {
-	onClick: () => void;
-	currentPage: number;
-	onClick1: () => void;
-	quiz: Quiz;
-}) {
-	return (
-		<div className={'w-[600px]'}>
-			<div className={'flex flex-row gap-3'}>
-				<button
-					onClick={props.onClick}
-					className={`${isFirstPage(props.currentPage) ? disabledButtonClass : buttonClass}`}
-					type='button'
-				>
-					Previous
-				</button>
-				<button
-					onClick={props.onClick1}
-					className={`${isLastPage(props.quiz.questions.length, props.currentPage) ? disabledButtonClass : buttonClass}`}
-				>
-					Next
-				</button>
-			</div>
-			<div className='flex'>
-				{isLastPage(props.quiz.questions.length, props.currentPage) && (
-					<button onClick={props.onClick1} className={buttonClassGreen}>
-						Finish Test
-					</button>
-				)}
-			</div>
-		</div>
-	);
-}
+import {
+	getNextPage,
+	getPreviousPage,
+	TestNavigation
+} from '../components/TestNavigation.tsx';
+import { getRandomQuestions } from '../helpers/getRandomQuestions.ts';
 
 const Test = (props: {
 	quiz: Quiz;
@@ -105,15 +39,15 @@ const Test = (props: {
 				}}
 			/>
 			<TestCard
-				questionId={Number(props.qid === 0 ? 1 : props.qid)}
-				questionNumber={Number(props.qid ?? 1)}
-				questionTotal={props.quiz.questions?.length ?? 0}
+				questionId={Number(props.qid)}
+				questionNumber={Number(props.qid ?? 0)}
+				questionTotal={props.quiz.no_of_questions ?? 0}
 				changeAnswers={props.changeAnswers}
 			/>
 			<TestNavigation
-				onClick={props.onClick}
+				previousPageFn={props.onClick}
 				currentPage={props.qid}
-				onClick1={props.onClick1}
+				nextPageFn={props.onClick1}
 				quiz={props.quiz}
 			/>
 		</>
@@ -127,7 +61,24 @@ export const TestPage = () => {
 	useEffect(() => {
 		fetch(`${quizUrlRoot}/quiz/${id}`)
 			.then((res) => res.json())
-			.then((data: { data: Quiz }) => setQuiz(data.data));
+			.then((data: { data: Quiz }) => {
+				setQuiz(data.data);
+				const randomSelectedQuestions = getRandomQuestions(
+					data.data.questions,
+					data.data.no_of_questions
+				);
+				const idFilter = randomSelectedQuestions.join(',');
+				fetch(`${quizUrlRoot}/quiz_questions?filter[id][_in]=${idFilter}`)
+					.then((res) => res.json())
+					.then((data: { data: Question[] }) => {
+						localStorage.setItem('questions', JSON.stringify(data.data));
+						const questions = data.data;
+						if (questions) {
+							const validAnswers = getValidAnswersList(questions);
+							validAnswers && setValidAnswers(validAnswers);
+						}
+					});
+			});
 	}, [id]);
 
 	const [qid, setQid] = useState<number | 'finish'>(0);
@@ -148,25 +99,17 @@ export const TestPage = () => {
 	);
 	const [correctAnswersCount, setCorrectAnswersCount] = useState<number>(0);
 
-	useEffect(() => {
-		fetch(`${quizUrlRoot}/quiz_questions`)
-			.then((res) => res.json())
-			.then((data: { data: Question[] }) => {
-				const validAnswers = getValidAnswersList(data);
-				setValidAnswers(validAnswers);
-			});
-	}, []);
-
 	const calculateScore = (finalAnswers: { [key: string]: number[] }) => {
 		let correctAnswersCount = 0;
 
 		if (validAnswers) {
 			for (const questionId in finalAnswers) {
-				const selectedAnswers = finalAnswers[questionId].sort();
-				const correctAnswers = validAnswers[questionId].sort();
+				const selectedAnswers = new Set(finalAnswers[questionId]);
+				const correctAnswers = new Set(validAnswers[questionId]);
 
 				if (
-					JSON.stringify(selectedAnswers) === JSON.stringify(correctAnswers)
+					selectedAnswers.size === correctAnswers.size &&
+					[...selectedAnswers].every((answer) => correctAnswers.has(answer))
 				) {
 					correctAnswersCount++;
 				}
@@ -183,7 +126,7 @@ export const TestPage = () => {
 			localStorage.setItem('time_ended', JSON.stringify(Date.now()));
 			resetTimer();
 		}
-	}, [answers, calculateScore, finalAnswers, qid]);
+	}, [answers, finalAnswers, qid]);
 
 	const changeAnswers = (answer: { [key: string]: number[] }) => {
 		const updatedAnswers = { ...answers, ...answer };
@@ -199,7 +142,7 @@ export const TestPage = () => {
 		}
 	}, [id]);
 
-	if (!quiz) return null;
+	if (!quiz || !localStorage.getItem('questions')) return null;
 	return (
 		<>
 			<div className='mx-auto w-[600px] px-4 sm:px-6 lg:px-8'>
@@ -233,7 +176,7 @@ export const TestPage = () => {
 								setQid(getPreviousPage(qid));
 							}}
 							onClick1={() => {
-								setQid(getNextPage(quiz.questions.length, qid));
+								setQid(getNextPage(quiz?.no_of_questions, qid));
 							}}
 							endTest={() => {
 								setQid('finish');

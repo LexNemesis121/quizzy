@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { quizUrlRoot } from '../helpers/appUrls.ts';
 import { Quiz } from '../interfaces/interfaces.ts';
-import { buttonClass } from './Test.page.tsx';
+import { buttonClass } from '../components/TestNavigation.tsx';
 
 export const TestInfoPage = () => {
 	const { id } = useParams();
@@ -12,7 +12,9 @@ export const TestInfoPage = () => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		fetch(`${quizUrlRoot}/quiz/${id}`)
+		fetch(
+			`${quizUrlRoot}/quiz/${id}?fields=id,quiz_name,pass_mark,time_per_question,remarks,no_of_questions`
+		)
 			.then((res) => res.json())
 			.then((data: { data: Quiz }) => setQuiz(data.data));
 	}, [id]);
@@ -37,7 +39,7 @@ export const TestInfoPage = () => {
 						buttonLabel={'Take Test'}
 						testTime={
 							Number(quiz?.time_per_question ?? 0.5) *
-							(quiz?.questions.length ?? 0) *
+							(quiz?.no_of_questions ?? 0) *
 							60 *
 							1000
 						}
@@ -46,15 +48,14 @@ export const TestInfoPage = () => {
 							<div className={'text-sm leading-6 text-gray-600'}>
 								Number of questions:{' '}
 								<span className={'text-sm font-bold text-gray-900'}>
-									{quiz.questions?.length ?? 0}
+									{quiz.no_of_questions ?? 0}
 								</span>
 							</div>
 							<div className={'text-sm leading-6 text-gray-600'}>
 								Duration of test:{' '}
 								<span className={'text-sm font-bold text-gray-900'}>
 									{decimalToTime(
-										(quiz.questions?.length ?? 0) *
-											Number(quiz.time_per_question)
+										(quiz.no_of_questions ?? 0) * Number(quiz.time_per_question)
 									)}
 								</span>
 							</div>

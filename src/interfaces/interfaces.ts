@@ -4,6 +4,7 @@ export type Quiz = {
 	pass_mark: number;
 	time_per_question: string;
 	remarks: { remark: string }[];
+	no_of_questions: number;
 	questions: [number, number];
 };
 

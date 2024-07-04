@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { quizUrlRoot } from '../helpers/appUrls.ts';
 import { Question } from '../interfaces/interfaces.ts';
 import { CodeBlock } from './CodeBlock.tsx';
 
@@ -8,13 +7,13 @@ export const indexToLetter = (index: number): string =>
 
 export const TestCardPreview = ({
 	questionId,
-	questionNumber,
+	questionIndex,
 	questionTotal,
 	selectedAnswers,
 	validAnswers
 }: {
 	questionId: number;
-	questionNumber: number;
+	questionIndex: number;
 	questionTotal: number;
 	selectedAnswers?: number[];
 	validAnswers?: number[];
@@ -22,17 +21,15 @@ export const TestCardPreview = ({
 	const [question, setQuestion] = useState<Question | undefined>(undefined);
 
 	useEffect(() => {
-		fetch(`${quizUrlRoot}/quiz_questions/${questionId}`)
-			.then((res) => res.json())
-			.then((data: { data: Question }) => setQuestion(data.data));
+		const q = JSON.parse(localStorage.getItem('questions') as string);
+		setQuestion(q[questionIndex]);
 	}, [questionId]);
 
 	return (
 		<div className='divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow w-[600px]'>
 			<div className='px-4 py-5 sm:px-6 bg-gray-100'>
 				<h4 className={'text-sm font-semibold leading-8 text-gray-700'}>
-					Question {questionNumber === 0 ? 1 : questionNumber} of{' '}
-					{questionTotal}
+					Question {questionIndex + 1} of {questionTotal}
 				</h4>
 			</div>
 			<div className='px-4 py-5 sm:p-6 flex flex-col gap-5'>

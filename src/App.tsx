@@ -8,7 +8,9 @@ function App() {
 	const [quizes, setQuizes] = useState<Quiz[]>([]);
 
 	useEffect(() => {
-		fetch(`${quizUrlRoot}/quiz`)
+		fetch(
+			`${quizUrlRoot}/quiz?fields=id,quiz_name,pass_mark,time_per_question,remarks,no_of_questions`
+		)
 			.then((res) => res.json())
 			.then((data: { data: Quiz[] }) => setQuizes(data.data));
 	}, []);
@@ -41,7 +43,7 @@ function App() {
 								buttonLabel={'View Details'}
 								testTime={
 									Number(quiz?.time_per_question ?? 0.5) *
-									(quiz?.questions.length ?? 0) *
+									(quiz?.no_of_questions ?? 0) *
 									60 *
 									1000
 								}
@@ -50,14 +52,14 @@ function App() {
 									<div className={'text-sm leading-6 text-gray-600'}>
 										Number of questions:{' '}
 										<span className={'text-sm font-bold text-gray-900'}>
-											{quiz.questions?.length ?? 0}
+											{quiz.no_of_questions ?? 0}
 										</span>
 									</div>
 									<div className={'text-sm leading-6 text-gray-600'}>
 										Duration of test:{' '}
 										<span className={'text-sm font-bold text-gray-900'}>
 											{decimalToTime(
-												(quiz.questions?.length ?? 0) *
+												(quiz.no_of_questions ?? 0) *
 													Number(quiz.time_per_question)
 											)}
 										</span>

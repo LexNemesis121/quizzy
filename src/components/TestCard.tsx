@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { quizUrlRoot } from '../helpers/appUrls.ts';
 import { Question } from '../interfaces/interfaces.ts';
 import { CodeBlock } from './CodeBlock.tsx';
 
@@ -24,14 +23,13 @@ export const TestCard = ({
 		const storedAnswers = localStorage.getItem('answers');
 		if (storedAnswers) {
 			const parsedAnswers = JSON.parse(storedAnswers);
-			setSelectedAnswers(parsedAnswers[questionId] ?? []);
+			setSelectedAnswers(parsedAnswers[questionId - 1] ?? []);
 		}
 	}, [questionId]);
 
 	useEffect(() => {
-		fetch(`${quizUrlRoot}/quiz_questions/${questionId}`)
-			.then((res) => res.json())
-			.then((data: { data: Question }) => setQuestion(data.data));
+		const questions = JSON.parse(localStorage.getItem('questions') as string);
+		setQuestion(questions[questionId - 1]);
 	}, [questionId]);
 
 	const handleChange = (index: number) => {
@@ -40,10 +38,12 @@ export const TestCard = ({
 				? selectedAnswers.filter((i) => i !== index)
 				: [...selectedAnswers, index];
 			setSelectedAnswers(updatedAnswers);
-			changeAnswers({ [questionId]: updatedAnswers });
+			changeAnswers({
+				[questionNumber - 1]: updatedAnswers
+			});
 		} else {
 			setSelectedAnswers([index]);
-			changeAnswers({ [questionId]: [index] });
+			changeAnswers({ [questionNumber - 1]: [index] });
 		}
 	};
 
@@ -51,8 +51,7 @@ export const TestCard = ({
 		<div className='divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow w-[600px]'>
 			<div className='px-4 py-5 sm:px-6 bg-gray-100'>
 				<h4 className={'text-sm font-semibold leading-8 text-gray-700'}>
-					Question {questionNumber === 0 ? 1 : questionNumber} of{' '}
-					{questionTotal}
+					Question {questionNumber} of {questionTotal}
 				</h4>
 			</div>
 			<div className='px-4 py-5 sm:p-6 flex flex-col gap-5'>

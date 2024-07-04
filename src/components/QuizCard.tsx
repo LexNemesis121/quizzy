@@ -17,6 +17,7 @@ export const QuizCard = ({
 	testTime: number;
 }) => {
 	const startTest = () => {
+		localStorage.removeItem('questions');
 		timerService.startTimer();
 		setStartTime();
 		setTimeout(() => {

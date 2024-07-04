@@ -12,7 +12,7 @@ import timerService from '../services/timer.service.ts';
 const Timer = ({ quiz, endTest }: { quiz: Quiz; endTest: () => void }) => {
 	const TOTAL_TEST_TIME =
 		Number(quiz?.time_per_question ?? 0.5) *
-		(quiz?.questions.length ?? 0) *
+		(quiz?.no_of_questions ?? 0) *
 		60 *
 		1000;
 

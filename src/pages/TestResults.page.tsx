@@ -5,11 +5,10 @@ import {
 	formatDuration,
 	resetTimer
 } from '../helpers/dateTime.ts';
-import { buttonClass } from './Test.page.tsx';
 import { useEffect, useRef, useState } from 'react';
-import { quizUrlRoot } from '../helpers/appUrls.ts';
 import { TestCardPreview } from '../components/TestCardPreview.tsx';
 import { getValidAnswersList } from '../helpers/validAnswers.ts';
+import { buttonClass } from '../components/TestNavigation.tsx';
 
 export const TestResults = (props: {
 	correctAnswersCount: number;
@@ -30,12 +29,9 @@ export const TestResults = (props: {
 
 	// Fetch questions and valid answers
 	useEffect(() => {
-		fetch(`${quizUrlRoot}/quiz_questions`)
-			.then((res) => res.json())
-			.then((data: { data: Question[] }) => {
-				setQuestions(data.data);
-				setValidAnswers(getValidAnswersList(data));
-			});
+		const questions = JSON.parse(localStorage.getItem('questions') as string);
+		setQuestions(questions);
+		setValidAnswers(getValidAnswersList(questions));
 	}, []);
 
 	// Fetch selected answers
@@ -83,12 +79,12 @@ export const TestResults = (props: {
 				quiz_id: props.quiz.id,
 				questions: result,
 				passed:
-					(props.correctAnswersCount / props.quiz.questions.length) * 100 >=
+					(props.correctAnswersCount / props.quiz.no_of_questions) * 100 >=
 					props.quiz.pass_mark,
 				percentage:
-					(props.correctAnswersCount / props.quiz.questions.length) * 100,
+					(props.correctAnswersCount / props.quiz.no_of_questions) * 100,
 				points: totalScore,
-				total_questions: questions.length,
+				total_questions: props.quiz.no_of_questions,
 				duration: formatDuration(duration),
 				date: new Date().toISOString()
 			};
@@ -128,7 +124,7 @@ export const TestResults = (props: {
 						>
 							Test Results:{' '}
 							<span className={'pl-2'}>
-								{(props.correctAnswersCount / props.quiz.questions.length) *
+								{(props.correctAnswersCount / props.quiz.no_of_questions) *
 									100 <
 								props.quiz.pass_mark ? (
 									<span className='inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10'>
@@ -146,14 +142,14 @@ export const TestResults = (props: {
 						<div className={'text-sm leading-6 text-gray-600'}>
 							Points:{' '}
 							<span className={'text-sm font-bold text-gray-900'}>
-								{props.correctAnswersCount} / {props.quiz.questions.length}
+								{props.correctAnswersCount} / {props.quiz.no_of_questions}
 							</span>
 						</div>
 						<div className={'text-sm leading-6 text-gray-600'}>
 							Percentage:{' '}
 							<span className={'text-sm font-bold text-gray-900'}>
 								{(
-									(props.correctAnswersCount / props.quiz.questions.length) *
+									(props.correctAnswersCount / props.quiz.no_of_questions) *
 									100
 								).toFixed(2)}{' '}
 								%
@@ -163,7 +159,7 @@ export const TestResults = (props: {
 							Duration of test:{' '}
 							<span className={'text-sm font-bold text-gray-900'}>
 								{decimalToTime(
-									(props.quiz.questions?.length ?? 0) *
+									(props.quiz.no_of_questions ?? 0) *
 										Number(props.quiz.time_per_question)
 								)}
 							</span>
@@ -173,18 +169,20 @@ export const TestResults = (props: {
 			</div>
 			{Object.keys(selectedAnswers ?? {}).length > 0 ? (
 				<div className={'mt-5 flex flex-col gap-5'}>
-					{questions.map((question) => {
-						return (
-							<TestCardPreview
-								key={question.id}
-								selectedAnswers={selectedAnswers?.[question.id]}
-								validAnswers={validAnswers?.[question.id]}
-								questionId={question.id}
-								questionNumber={Number(question.id ?? 1)}
-								questionTotal={props.quiz.questions?.length ?? 0}
-							/>
-						);
-					})}
+					{questions
+						.slice(0, props.quiz.no_of_questions)
+						.map((question, index) => {
+							return (
+								<TestCardPreview
+									key={question.id}
+									selectedAnswers={selectedAnswers?.[index]}
+									validAnswers={validAnswers?.[index]}
+									questionId={question.id}
+									questionIndex={index}
+									questionTotal={props.quiz.no_of_questions ?? 0}
+								/>
+							);
+						})}
 				</div>
 			) : (
 				<div className='rounded-lg bg-white shadow p-4 mt-5 text-sm'>
