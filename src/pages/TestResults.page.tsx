@@ -1,10 +1,6 @@
 import { Question, Quiz } from '../interfaces/interfaces.ts';
 import { useNavigate } from 'react-router-dom';
-import {
-	decimalToTime,
-	formatDuration,
-	resetTimer
-} from '../helpers/dateTime.ts';
+import { formatDuration, resetTimer } from '../helpers/dateTime.ts';
 import { useEffect, useRef, useState } from 'react';
 import { TestCardPreview } from '../components/TestCardPreview.tsx';
 import { getValidAnswersList } from '../helpers/validAnswers.ts';
@@ -44,6 +40,8 @@ export const TestResults = (props: {
 		localStorage.removeItem('answers');
 	}, []);
 
+	const [duration, setDuration] = useState<string>();
+
 	// Create the result object and store it in localStorage
 	useEffect(() => {
 		if (questions.length && validAnswers && selectedAnswers) {
@@ -73,6 +71,8 @@ export const TestResults = (props: {
 			);
 			const endTime = parseInt(localStorage.getItem('time_ended') || '0', 10);
 			const duration = endTime - startTime;
+			const formattedDuration = formatDuration(duration);
+			setDuration(formattedDuration);
 
 			const resultObject = {
 				user_name: testTaker,
@@ -85,7 +85,7 @@ export const TestResults = (props: {
 					(props.correctAnswersCount / props.quiz.no_of_questions) * 100,
 				points: totalScore,
 				total_questions: props.quiz.no_of_questions,
-				duration: formatDuration(duration),
+				duration: formattedDuration,
 				date: new Date().toISOString()
 			};
 
@@ -158,10 +158,7 @@ export const TestResults = (props: {
 						<div className={'text-sm leading-6 text-gray-600'}>
 							Duration of test:{' '}
 							<span className={'text-sm font-bold text-gray-900'}>
-								{decimalToTime(
-									(props.quiz.no_of_questions ?? 0) *
-										Number(props.quiz.time_per_question)
-								)}
+								{duration}
 							</span>
 						</div>
 					</div>
