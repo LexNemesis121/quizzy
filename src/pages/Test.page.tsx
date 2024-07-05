@@ -59,24 +59,31 @@ export const TestPage = () => {
 	const [quiz, setQuiz] = useState<Quiz | undefined>(undefined);
 
 	useEffect(() => {
-		fetch(`${quizUrlRoot}/quiz/${id}`)
-			.then((res) => res.json())
-			.then((data: { data: Quiz }) => {
-				setQuiz(data.data);
-				const randomSelectedQuestions = getRandomQuestions(
-					data.data.questions,
-					data.data.no_of_questions
-				);
-				const idFilter = randomSelectedQuestions.join(',');
-				fetch(`${quizUrlRoot}/quiz_questions?filter[id][_in]=${idFilter}`)
+		fetch(`${quizUrlRoot}/quiz_questions?fields=id`)
+			.then((r) => r.json())
+			.then((questions: { data: Question[] }) => {
+				const questionIds = questions.data.map((q) => {
+					return q.id;
+				});
+				fetch(`${quizUrlRoot}/quiz/${id}`)
 					.then((res) => res.json())
-					.then((data: { data: Question[] }) => {
-						localStorage.setItem('questions', JSON.stringify(data.data));
-						const questions = data.data;
-						if (questions) {
-							const validAnswers = getValidAnswersList(questions);
-							validAnswers && setValidAnswers(validAnswers);
-						}
+					.then((data: { data: Quiz }) => {
+						setQuiz(data.data);
+						const randomSelectedQuestions = getRandomQuestions(
+							questionIds,
+							data.data.no_of_questions
+						);
+						const idFilter = randomSelectedQuestions.join(',');
+						fetch(`${quizUrlRoot}/quiz_questions?filter[id][_in]=${idFilter}`)
+							.then((res) => res.json())
+							.then((data: { data: Question[] }) => {
+								localStorage.setItem('questions', JSON.stringify(data.data));
+								const questions = data.data;
+								if (questions) {
+									const validAnswers = getValidAnswersList(questions);
+									validAnswers && setValidAnswers(validAnswers);
+								}
+							});
 					});
 			});
 	}, [id]);

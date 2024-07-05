@@ -35,7 +35,7 @@ export const TestInfoPage = () => {
 					</div>
 					<QuizCard
 						title={'Instructions'}
-						buttonUrl={'/test/1'}
+						buttonUrl={`/test/${quiz.id}`}
 						buttonLabel={'Take Test'}
 						testTime={
 							Number(quiz?.time_per_question ?? 0.5) *
