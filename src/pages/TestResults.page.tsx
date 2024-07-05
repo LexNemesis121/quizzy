@@ -62,7 +62,9 @@ export const TestResults = (props: {
 				};
 			});
 
-			const totalScore = result.reduce((acc, item) => acc + item.score, 0);
+			// const totalScore = result.reduce((acc, item) => acc + item.score, 0);
+
+			const totalScore = props.correctAnswersCount;
 
 			const testTaker = localStorage.getItem('test_taker') || 'unknown';
 			const startTime = parseInt(
